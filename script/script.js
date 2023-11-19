@@ -106,7 +106,6 @@ let events = localStorage.getItem("events") ? JSON.parse(localStorage.getItem("e
 const weekdays = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
 
 function loadCalendar() {
-
     const dt = new Date();
 
     if (navigation != 0) {
@@ -190,7 +189,6 @@ function loadCalendar() {
 }
 
 function buttons(){
-
     const btnBack = document.querySelector("#btnBack");
     const btnNext = document.querySelector("#btnNext");
     const btnDelete = document.querySelector("#btnDelete");
@@ -247,7 +245,6 @@ const viewEventForm = document.querySelector("#viewEvent");
 const addEventForm = document.querySelector("#addEvent");
 
 function showModal(dateText){
-    
     clicked = dateText;
     const eventOfTheDay = events.find( e => e.date == dateText );
 
