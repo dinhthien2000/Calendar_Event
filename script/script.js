@@ -121,7 +121,7 @@ function loadCalendar() {
     })} ${year}`;
 
     calendar.innerHTML = "";
-    const dayInMonth = new Date(year, month + 1, 0); print("dayInMonth: ", dayInMonth);
+    const dayInMonth = new Date(year, month + 1, 0).getDate(); print("dayInMonth: ", dayInMonth);
     const firstDayInMonth = new Date(year, month, 1); print("firstDayInMonth: ", firstDayInMonth);
     const dateText = firstDayInMonth.toLocaleDateString("en-us", {
         weekday: "long",
@@ -136,9 +136,9 @@ function loadCalendar() {
     print("dayString: ", dayString);
     const emptyDays = weekdays.indexOf(dayString); // empty để load render các ô trống không có ngày trên calendar
     print("emptyDays: ", emptyDays);
-
+    print("Check loadCalender: ", " " + (dayInMonth + emptyDays));
     for (let i = 1; i <= dayInMonth + emptyDays; i++) {
-        const dayBox = document.createElement("div");
+        const dayBox = document.createElement("div"); // print("dayBox: ", dayBox);
         dayBox.classList.add("day");
 
         // nếu ngày hoặc tháng nhỏ hơn 10 thì ghép chuỗi "0" để thành 01, 02, ...
@@ -168,7 +168,8 @@ function loadCalendar() {
 
             if (holidayOffTheDay) {
                 const eventDiv = document.createElement("div");
-                eventDiv.classList.add("event").classList.add("holiday");
+                eventDiv.classList.add("event");
+                eventDiv.classList.add("holiday");
                 eventDiv.innerText = holidayOffTheDay.holiday;
                 dayBox.appendChild(eventDiv);
 
@@ -185,57 +186,61 @@ function loadCalendar() {
         calendar.append(dayBox);
 
     }
-
+    // print("Check loadCalender: ", "2");
 }
 
-function buttons(){
+function buttons() {
     const btnBack = document.querySelector("#btnBack");
     const btnNext = document.querySelector("#btnNext");
     const btnDelete = document.querySelector("#btnDelete");
     const btnSave = document.querySelector("#btnSave");
-    const closeButtons =document.querySelector(".btnClose");
+    const closeButtons = document.querySelectorAll(".btnClose");
     const txtTitle = document.querySelector("#txtTitle");
 
 
-    btnBack.onclick = () =>{
+    btnBack.onclick = () => {
         navigation--;
         loadCalendar();
     };
 
-    btnNext.onclick = () =>{
+    btnNext.onclick = () => {
         navigation++;
         loadCalendar();
     };
 
-    modal.onclick = () =>{
-        closeButtons.forEach( btn => {
-            btn.onclick = () =>{
-                closeModal();
-            };
-        });
-    };
+    modal.onclick = () => { closeModal(); };
+    //modal.addEventListener("click",  print("Modal","1"));
+    closeButtons.forEach(btn => {
+        btn.onclick = () => {
+            closeModal();
+        };
+    });
 
-    btnDelete.onclick = () =>{
-        events = events.filter( e => e.date !== clicked);
+    // closeButtons.onclick = () => {
+    //     closeModal();
+    // };
+
+btnDelete.onclick = () => {
+    events = events.filter(e => e.date !== clicked);
+    localStorage.setItem("events", JSON.stringify(events));
+    closeModal();
+};
+
+btnSave.onclick = () => {
+    if (txtTitle.value) {
+        txtTitle.classList.remove("error");
+        events.push({
+            date: clicked,
+            title: txtTitle.value.trim()
+        });
+
+        txtTitle.value = "";
         localStorage.setItem("events", JSON.stringify(events));
         closeModal();
-    };
-
-    btnSave.onclick = () =>{
-        if(txtTitle.value){
-            txtTitle.classList.remove("error");
-            events.push({
-                date: clicked,
-                title: txtTitle.value.trim()
-            });
-
-            txtTitle.value = "";
-            localStorage.setItem("events", JSON.stringify(events));
-            closeModal();
-        }else{
-            txtTitle.classList.add("error");
-        }
-    };
+    } else {
+        txtTitle.classList.add("error");
+    }
+};
 
 }
 
@@ -244,28 +249,28 @@ const modal = document.querySelector("#modal");
 const viewEventForm = document.querySelector("#viewEvent");
 const addEventForm = document.querySelector("#addEvent");
 
-function showModal(dateText){
+function showModal(dateText) {
     clicked = dateText;
-    const eventOfTheDay = events.find( e => e.date == dateText );
+    const eventOfTheDay = events.find(e => e.date == dateText);
 
-    if(eventOfTheDay){
+    if (eventOfTheDay) {
         // Event already Preset
         document.querySelector("#eventText").innerText = eventOfTheDay.title;
-        viewEventForm.computedStyleMap.display = "block";
-    }else{
+        viewEventForm.style.display = "block";
+    } else {
         // add new Event
         addEventForm.style.display = "block";
     }
 
-    // maddEventForm.style.display = "block";
+    modal.style.display = "block";
 }
 
-function closeModal(){
+function closeModal() {
     viewEventForm.style.display = "none";
-    addEventForm.style.displau = "none";
+    addEventForm.style.display = "none";
     modal.style.display = "none";
     clicked = null;
-    loadCalendar(); 
+    loadCalendar();
 }
 
 buttons();
